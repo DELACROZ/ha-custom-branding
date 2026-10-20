@@ -1,0 +1,12 @@
+# Add to configuration.yaml, then restart Home Assistant.
+# Put your images in /config/www/branding/ (they are served at /local/branding/...).
+custom_branding:
+  name: "My Smart Home"            # shown in the tab title, sidebar and the installed app
+  short_name: "Smart Home"         # app name on the phone's home screen (max ~12 chars looks best)
+  logo: /local/branding/logo.png   # transparent PNG, shown on the loading screen and the login page
+  icon: /local/branding/icon-512.png               # square PNG (512x512), app/favicon icon
+  icon_maskable: /local/branding/icon-maskable.png # optional, 512x512 with ~20% padding
+  background_color: "#0b1220"
+  accent_color: "#38bdf8"
+  text_color: "#eef7ff"
+  loading_text: "Loading"

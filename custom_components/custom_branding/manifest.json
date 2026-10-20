@@ -1,0 +1,19 @@
+{
+  "domain": "custom_branding",
+  "name": "Custom Branding",
+  "after_dependencies": [
+    "frontend"
+  ],
+  "codeowners": [
+    "@DELACROZ"
+  ],
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/DELACROZ/ha-custom-branding",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/DELACROZ/ha-custom-branding/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}
