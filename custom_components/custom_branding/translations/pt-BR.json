@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Custom Branding",
+        "description": "Coloque a sua logo, nome e cores na tela de login, na tela de carregamento e no app instalado. Depois de adicionar, abra **Branding** no menu lateral para enviar as imagens e salvar."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "O Custom Branding já está configurado."
+    }
+  }
+}

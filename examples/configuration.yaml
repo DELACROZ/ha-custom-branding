@@ -1,11 +1,11 @@
-# Add to configuration.yaml, then restart Home Assistant.
-# Put your images in /config/www/branding/ (they are served at /local/branding/...).
+# LEGACY (versions 1.x). Since 2.0 you configure everything in the "Branding" panel (sidebar).
+# If this block exists when the integration starts for the first time, it is imported once; after that you can delete it.
 custom_branding:
-  name: "My Smart Home"            # shown in the tab title, sidebar and the installed app
-  short_name: "Smart Home"         # app name on the phone's home screen (max ~12 chars looks best)
-  logo: /local/branding/logo.png   # transparent PNG, shown on the loading screen and the login page
-  icon: /local/branding/icon-512.png               # square PNG (512x512), app/favicon icon
-  icon_maskable: /local/branding/icon-maskable.png # optional, 512x512 with ~20% padding
+  name: "My Smart Home"
+  short_name: "Smart Home"
+  logo: /local/branding/logo.png
+  icon: /local/branding/icon-512.png
+  icon_maskable: /local/branding/icon-maskable.png
   background_color: "#0b1220"
   accent_color: "#38bdf8"
   text_color: "#eef7ff"

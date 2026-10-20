@@ -12,6 +12,14 @@
 
 *(Example brand: IoT Now. The logo, name and colors are all yours to set.)*
 
+### Set it up from a screen — no files, no YAML
+
+A **Branding** panel appears in the sidebar (admins only). Choose your logo, type the name, pick the colors, press **Save**. Changes apply immediately, no restart needed.
+
+| Identity + images | Colors, options + live preview |
+| --- | --- |
+| ![Branding panel, part 1](docs/panel-1.png) | ![Branding panel, part 2](docs/panel-2.png) |
+
 ## What it changes
 
 | Where | What you get |
@@ -26,7 +34,7 @@ Everything is optional: only the options you set are applied.
 ## ⚠️ Before you install
 
 * **Make a backup first.** Copy `configuration.yaml` (for example to `configuration.yaml.bak`) and, ideally, create a full backup in *Settings → System → Backups*. Nothing here deletes or changes your data, but you will edit `configuration.yaml` and restart Home Assistant, and a backup makes it a 10-second undo.
-* **Tested version:** this release was tested on **Home Assistant 2026.10.2** (Home Assistant OS). It hooks into the web routes that serve the login page and the loading screen, which are internal parts of Home Assistant's frontend. **Other Home Assistant versions are not guaranteed**: if a future version changes those internals, Custom Branding logs a warning and Home Assistant keeps serving its original pages (nothing breaks), but the branding may stop appearing until this integration is updated. If that happens, please [open an issue](https://github.com/DELACROZ/ha-custom-branding/issues) with your Home Assistant version.
+* **Tested version:** version 2.0 was tested on **Home Assistant 2026.10.2** (Home Assistant OS). It hooks into the web routes that serve the login page and the loading screen, which are internal parts of Home Assistant's frontend. **Other Home Assistant versions are not guaranteed**: if a future version changes those internals, Custom Branding logs a warning and Home Assistant keeps serving its original pages (nothing breaks), but the branding may stop appearing until this integration is updated. If that happens, please [open an issue](https://github.com/DELACROZ/ha-custom-branding/issues) with your Home Assistant version.
 * **If something goes wrong:** delete the `custom_branding:` block from `configuration.yaml` (or restore your backup) and restart.
 
 ## Install
@@ -34,17 +42,28 @@ Everything is optional: only the options you set are applied.
 ### With HACS (custom repository)
 1. HACS → ⋮ → **Custom repositories** → add `https://github.com/DELACROZ/ha-custom-branding` as category **Integration**.
 2. Download **Custom Branding**, then restart Home Assistant.
+3. **Settings → Devices & services → Add integration → Custom Branding.**
+4. Open **Branding** in the sidebar and set it up (next section).
 
 ### Manual
-Copy `custom_components/custom_branding` into your `/config/custom_components/` folder and restart.
+Copy `custom_components/custom_branding` into your `/config/custom_components/` folder, restart, then add the integration as in step 3 above.
 
-## Configure
+## Configure (from the panel)
 
-1. Put your images in `/config/www/branding/` (they are served at `/local/branding/...`):
-   * `logo.png` — transparent PNG (wide logos work best), used on the loading screen and the login page. Made for dark backgrounds.
-   * `icon-512.png` — square PNG (512×512), used as the app icon and favicon.
-   * `icon-maskable.png` — optional, 512×512 with about 20 % padding, for Android adaptive icons.
-2. Add to `configuration.yaml` and restart:
+Open **Branding** in the sidebar:
+
+* **Identity:** name (tab title, sidebar and app name), short name (under the app icon on the phone) and the loading text.
+* **Images:** choose your **logo**. Tick *"My logo has a black background"* if it is a JPEG on black (it becomes transparent). Leave *"Create the app icon from the logo"* ticked and the square app icons are made for you; or upload your own. PNG, JPEG, WebP or SVG are accepted (max 6 MB).
+* **Colors:** background, accent (spinner, buttons) and text. The preview shows the loading screen live.
+* **Options:** hide the Home Assistant logo / the "Open Home Foundation" footer, replace the sidebar title and the tab title.
+* Press **Save**, then reload the page with **Ctrl+F5**. Uploaded images are stored in `/config/custom_branding/`.
+
+Best results: a transparent PNG logo (wide logos work best), made for dark backgrounds.
+
+### Upgrading from 1.x (YAML)
+If you used the `custom_branding:` block in `configuration.yaml`, it is **imported automatically once** the first time the integration starts. After that you can edit everything in the panel and delete the YAML block. (Images that were referenced by path, like `/local/branding/logo.png`, keep working.)
+
+<details><summary>YAML reference (legacy, imported once)</summary>
 
 ```yaml
 custom_branding:
@@ -57,25 +76,13 @@ custom_branding:
   accent_color: "#38bdf8"
   text_color: "#eef7ff"
   loading_text: "Loading"
+  hide_ha_logo: true
+  hide_open_home_foundation: true
+  sidebar_title: true
+  tab_title: true
 ```
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `name` | *(unchanged)* | Name used in the tab title, sidebar, app name and metadata. |
-| `short_name` | first 20 chars of `name` | Name under the app icon on the phone. |
-| `logo` | – | Path/URL of the logo for the loading screen and login page. |
-| `icon` | – | Path/URL of the square app icon and favicon. |
-| `icon_maskable` | – | Optional maskable icon for Android. |
-| `background_color` | `#04060a` | Background of the loading/login screens and the app's theme color. |
-| `accent_color` | `#00d9ff` | Spinner, buttons, links and glow on the login page. |
-| `text_color` | `#eef7ff` | Text color on the login page. |
-| `loading_text` | `Loading` | Text under the spinner (empty string hides it). |
-| `hide_ha_logo` | `true` | Hide the Home Assistant logo on the loading screen (needs `logo`). |
-| `hide_open_home_foundation` | `true` | Hide the "A project from the Open Home Foundation" footer. |
-| `sidebar_title` | `true` | Replace "Home Assistant" in the sidebar with `name`. |
-| `tab_title` | `true` | Replace "Home Assistant" in the browser tab title with `name`. |
-
-Colors accept `#rrggbb`, `rgb()/hsl()` or color names. Paths accept anything under `/local/` (or any public URL).
+</details>
 
 ## Good to know
 
@@ -86,9 +93,9 @@ Colors accept `#rrggbb`, `rgb()/hsl()` or color names. Paths accept anything und
 
 ## How it works
 
-Home Assistant renders the login page and the loading screen from fixed HTML files that no setting, theme or `extra_module_url` can reach. Custom Branding wraps the two web routes that serve them (`/` and `/auth/authorize`) and adds one `<link>`/`<script>` pair plus a few attribute swaps. Its own generated assets are served from `/custom_branding/` (public, because the login page needs them before anyone is signed in). If anything goes wrong, the original page is served untouched and a warning is logged.
+Home Assistant renders the login page and the loading screen from fixed HTML files that no setting, theme or `extra_module_url` can reach. Custom Branding wraps the two web routes that serve them (`/` and `/auth/authorize`) and adds one `<link>`/`<script>` pair plus a few attribute swaps. Its own generated assets are served from `/custom_branding/` (public, because the login page needs them before anyone is signed in; uploads are admin-only and checked by file signature). Settings live in the integration's config entry and the images in `/config/custom_branding/`. If anything goes wrong, the original page is served untouched and a warning is logged.
 
-It does **not** modify any Home Assistant file and keeps no state. To remove it: delete the `custom_branding:` block, remove the integration folder and restart.
+It does **not** modify any Home Assistant file and keeps no state. To remove it: delete the integration in *Settings → Devices & services* (and the `custom_branding:` block if you still have it), then restart; you can also delete `/config/custom_branding/`.
 
 ## Troubleshooting
 
@@ -120,19 +127,8 @@ MIT licensed.
 
 **Instalação (HACS):** HACS → ⋮ → *Repositórios personalizados* → `https://github.com/DELACROZ/ha-custom-branding` → categoria *Integração* → baixar **Custom Branding** → reiniciar.
 
-**Configuração:** coloque suas imagens em `/config/www/branding/` (`logo.png` transparente, `icon-512.png` quadrado) e adicione ao `configuration.yaml`:
+**Configuração (pela tela):** *Configurações → Dispositivos e serviços → Adicionar integração → Custom Branding*. Depois abra **Branding** no menu lateral: escolha a **logo** (marque a caixa se ela tiver fundo preto), digite o **nome**, escolha as **cores** e clique em **Salvar**. Vale na hora (recarregue com **Ctrl+F5**); não precisa reiniciar nem editar arquivo. O ícone do app é criado a partir da logo. Apps já instalados precisam ser desinstalados e instalados de novo para pegar o ícone novo.
 
-```yaml
-custom_branding:
-  name: "Minha Casa Inteligente"
-  short_name: "Minha Casa"
-  logo: /local/branding/logo.png
-  icon: /local/branding/icon-512.png
-  background_color: "#0b1220"
-  accent_color: "#38bdf8"
-  loading_text: "Carregando"
-```
-
-Reinicie o Home Assistant e recarregue a página com **Ctrl+F5**. Para o app instalado mudar, desinstale e instale de novo. Todas as opções estão na tabela acima.
+**Vindo da versão 1.x (YAML):** o bloco `custom_branding:` é importado sozinho uma vez; depois você pode apagá-lo e editar tudo na tela.
 
 **Criado por Marcelo Junior ([@DELACROZ](https://github.com/DELACROZ))** · **IoT Now** — casas e escritórios inteligentes e telemetria em Caldas Novas, Goiás. Site: [marceloautomacoesgo.com.br](https://marceloautomacoesgo.com.br) · Instagram: [@iot_now_automacoes](https://www.instagram.com/iot_now_automacoes).

@@ -33,6 +33,35 @@ DEFAULTS = {
 }
 
 
+ALLOWED_KEYS = tuple(DEFAULTS)
+MAX_UPLOAD = 6 * 1024 * 1024
+
+
+def clean_settings(raw: dict | None, defaults: dict = DEFAULTS) -> dict:
+    """Keep only known keys with sane types (used before storing settings coming from the UI or YAML)."""
+    out = {}
+    for key in ALLOWED_KEYS:
+        if raw is None or key not in raw or raw[key] in (None, ""):
+            continue
+        value = raw[key]
+        if isinstance(defaults.get(key), bool):
+            out[key] = bool(value)
+        else:
+            out[key] = str(value).strip()
+    return out
+
+
+def detect_image(data: bytes) -> str | None:
+    """Return 'png', 'jpg' or 'webp' from the file signature (never trust the file name)."""
+    if data[:8] == bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]):
+        return "png"
+    if data[:3] == bytes([0xFF, 0xD8, 0xFF]):
+        return "jpg"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
 def normalize(cfg: dict | None) -> dict:
     """Return clean settings (invalid colors/paths fall back to defaults) plus a short `version` hash."""
     s = dict(DEFAULTS)

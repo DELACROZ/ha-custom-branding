@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Custom Branding",
+        "description": "Put your own logo, name and colors on the login page, the loading screen and the installed app. After adding it, open **Branding** in the sidebar to upload your images and save."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Custom Branding is already set up."
+    }
+  }
+}

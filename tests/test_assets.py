@@ -56,6 +56,24 @@ def test_only_what_is_configured_changes():
     assert b"/custom_branding/branding.css" in out
 
 
+def test_clean_settings_keeps_only_known_keys():
+    out = assets.clean_settings({"name": " X ", "hide_ha_logo": 0, "junk": 1, "accent_color": "", "logo": None})
+    assert out == {"name": "X", "hide_ha_logo": False}
+
+
+def test_detect_image_by_signature():
+    assert assets.detect_image(bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0])) == "png"
+    assert assets.detect_image(bytes([0xFF, 0xD8, 0xFF, 0xE0])) == "jpg"
+    assert assets.detect_image(b"RIFFxxxxWEBPyy") == "webp"
+    assert assets.detect_image(b"<svg onload=alert(1)>") is None
+    assert assets.detect_image(b"") is None
+
+
+def test_internal_upload_urls_are_accepted():
+    s = assets.normalize({"logo": "/custom_branding/files/logo?v=62437857", "name": "X"})
+    assert s["logo"] == "/custom_branding/files/logo?v=62437857"
+
+
 def test_css_js_manifest():
     s = assets.normalize(FULL)
     css = assets.build_css(s)
