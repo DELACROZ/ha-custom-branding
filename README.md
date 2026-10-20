@@ -23,6 +23,12 @@
 
 Everything is optional: only the options you set are applied.
 
+## ⚠️ Before you install
+
+* **Make a backup first.** Copy `configuration.yaml` (for example to `configuration.yaml.bak`) and, ideally, create a full backup in *Settings → System → Backups*. Nothing here deletes or changes your data, but you will edit `configuration.yaml` and restart Home Assistant, and a backup makes it a 10-second undo.
+* **Tested version:** this release was tested on **Home Assistant 2026.10.2** (Home Assistant OS). It hooks into the web routes that serve the login page and the loading screen, which are internal parts of Home Assistant's frontend. **Other Home Assistant versions are not guaranteed**: if a future version changes those internals, Custom Branding logs a warning and Home Assistant keeps serving its original pages (nothing breaks), but the branding may stop appearing until this integration is updated. If that happens, please [open an issue](https://github.com/DELACROZ/ha-custom-branding/issues) with your Home Assistant version.
+* **If something goes wrong:** delete the `custom_branding:` block from `configuration.yaml` (or restore your backup) and restart.
+
 ## Install
 
 ### With HACS (custom repository)
@@ -109,6 +115,8 @@ MIT licensed.
 # 🇧🇷 Português
 
 **Deixe o Home Assistant com a *sua* marca.** Coloque seu nome, logo e cores na **tela de login**, na **tela de carregamento**, no **ícone e nome do app instalado (PWA)**, no **título da barra lateral** e no **título da aba** — sem mexer em arquivos do sistema e sem proxy reverso.
+
+**Antes de instalar:** faça um **backup do `configuration.yaml`** (copie para `configuration.yaml.bak`) e, de preferência, um backup completo em *Configurações → Sistema → Backups*. **Versão testada:** Home Assistant **2026.10.2** (HA OS). Em outras versões **não há garantia**: se uma versão futura mudar essas partes internas, a integração registra um aviso e o Home Assistant continua mostrando as telas originais (nada quebra), mas a marca pode deixar de aparecer até a integração ser atualizada. Se acontecer, abra uma *issue* informando a sua versão. Para desfazer: apague o bloco `custom_branding:` (ou restaure o backup) e reinicie.
 
 **Instalação (HACS):** HACS → ⋮ → *Repositórios personalizados* → `https://github.com/DELACROZ/ha-custom-branding` → categoria *Integração* → baixar **Custom Branding** → reiniciar.
 
