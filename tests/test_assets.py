@@ -95,6 +95,21 @@ def test_welcome_text():
     assert assets.build_js(assets.normalize({}))  # no welcome_text set: still builds fine
 
 
+def test_footer_link():
+    s = assets.normalize({"footer_link": "whatsapp", "footer_link_value": " 5564999999999 "})
+    assert s["footer_link"] == "whatsapp" and s["footer_link_value"] == "5564999999999"
+    js = assets.build_js(s)
+    cfg = json.loads(js.split("var C = ")[1].split(";\n")[0])
+    assert cfg["footer_link"] == "whatsapp" and cfg["footer_link_value"] == "5564999999999"
+    assert "home-assistant.io/docs/authentication" in js
+
+    s2 = assets.normalize({"footer_link": "not-a-real-option"})
+    assert s2["footer_link"] is None
+
+    s3 = assets.normalize({"footer_link": "hide"})
+    assert s3["footer_link"] == "hide"
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
