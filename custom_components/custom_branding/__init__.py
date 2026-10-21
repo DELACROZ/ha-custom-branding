@@ -54,6 +54,8 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Optional("text_color"): cv.string,
                 vol.Optional("loading_text"): cv.string,
                 vol.Optional("welcome_text"): cv.string,
+                vol.Optional("footer_link"): cv.string,
+                vol.Optional("footer_link_value"): cv.string,
                 vol.Optional("hide_ha_logo"): cv.boolean,
                 vol.Optional("hide_open_home_foundation"): cv.boolean,
                 vol.Optional("sidebar_title"): cv.boolean,

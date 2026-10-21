@@ -27,6 +27,8 @@ DEFAULTS = {
     "text_color": "#eef7ff",
     "loading_text": "Loading",
     "welcome_text": None,
+    "footer_link": None,
+    "footer_link_value": None,
     "hide_ha_logo": True,
     "hide_open_home_foundation": True,
     "sidebar_title": True,
@@ -79,9 +81,11 @@ def normalize(cfg: dict | None) -> dict:
             s[key] = None
         elif v is not None:
             s[key] = v.strip()
-    for key in ("name", "short_name", "loading_text", "welcome_text"):
+    for key in ("name", "short_name", "loading_text", "welcome_text", "footer_link_value"):
         if s[key] is not None:
             s[key] = str(s[key]).strip()[:60] or None
+    if s["footer_link"] not in ("hide", "whatsapp", "instagram"):
+        s["footer_link"] = None
     if s["name"] and not s["short_name"]:
         s["short_name"] = s["name"][:20]
     s["version"] = hashlib.sha1(json.dumps(s, sort_keys=True, default=str).encode()).hexdigest()[:8]
@@ -168,12 +172,53 @@ _JS = """/* Custom Branding: loading screen content, sidebar title and tab title
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
     setInterval(run, 500);
   }
+  if (C.footer_link) {
+    var HELP_HREF = "https://www.home-assistant.io/docs/authentication/";
+    var ICONS = {
+      whatsapp: '<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#25D366"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.17c-.24.68-1.19 1.25-1.95 1.4-.52.1-1.2.19-3.49-.75-2.93-1.2-4.82-4.16-4.97-4.35-.14-.2-1.19-1.58-1.19-3.01s.75-2.13 1.02-2.42c.26-.29.57-.37.76-.37h.55c.18 0 .42-.07.65.5.24.58.82 2.01.89 2.16.07.14.11.31.02.5-.09.18-.14.3-.27.46-.14.17-.29.37-.41.5-.14.14-.28.3-.12.58.16.29.72 1.19 1.55 1.93 1.07.95 1.96 1.25 2.26 1.39.3.14.47.12.64-.07.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.07.13.07.74-.17 1.42z"/></svg></span>',
+      instagram: '<span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.97.24 2.43.4.61.24 1.05.52 1.51.98.46.46.74.9.98 1.51.17.46.35 1.26.4 2.43.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.24 1.97-.4 2.43-.24.61-.52 1.05-.98 1.51-.46.46-.9.74-1.51.98-.46.17-1.26.35-2.43.4-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.97-.24-2.43-.4-.61-.24-1.05-.52-1.51-.98-.46-.46-.74-.9-.98-1.51-.17-.46-.35-1.26-.4-2.43-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.24-1.97.4-2.43.24-.61.52-1.05.98-1.51.46-.46.9-.74 1.51-.98.46-.17 1.26-.35 2.43-.4 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.39-.67.67-1.08 1.34-1.39 2.13-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.39 2.13.67.67 1.34 1.08 2.13 1.39.76.3 1.63.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56.79-.31 1.46-.72 2.13-1.39.67-.67 1.08-1.34 1.39-2.13.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91-.31-.79-.72-1.46-1.39-2.13-.67-.67-1.34-1.08-2.13-1.39-.76-.3-1.63-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.41-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/></svg></span>'
+    };
+    var LABELS = { whatsapp: "WhatsApp", instagram: "Instagram" };
+    var footerUrl = function () {
+      var v = (C.footer_link_value || "").trim();
+      if (!v) return null;
+      if (C.footer_link === "whatsapp") { var d = v.replace(/\\D/g, ""); return d ? "https://wa.me/" + d : null; }
+      if (C.footer_link === "instagram") { return /^https?:\\/\\//.test(v) ? v : "https://instagram.com/" + v.replace(/^@/, ""); }
+      return null;
+    };
+    var fixFooter = function (node) {
+      if (node.getAttribute && node.getAttribute("href") === HELP_HREF) {
+        if (C.footer_link === "hide") { node.style.display = "none"; }
+        else {
+          var url = footerUrl();
+          if (url) {
+            node.setAttribute("href", url);
+            node.setAttribute("target", "_blank");
+            node.setAttribute("rel", "noopener noreferrer");
+            node.innerHTML = ICONS[C.footer_link] + '<span style="margin-left:6px">' + LABELS[C.footer_link] + "</span>";
+            node.style.display = "inline-flex";
+            node.style.alignItems = "center";
+          }
+        }
+        return;
+      }
+      var kids = node.children || [];
+      for (var i = 0; i < kids.length; i++) fixFooter(kids[i]);
+      if (node.shadowRoot) fixFooter(node.shadowRoot);
+    };
+    var runFooter = function () { try { fixFooter(document.body); } catch (e) {} };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", runFooter); else runFooter();
+    setInterval(runFooter, 500);
+  }
 })();
 """
 
 
 def build_js(s: dict) -> str:
-    cfg = {k: s[k] for k in ("name", "logo", "loading_text", "welcome_text", "sidebar_title", "tab_title")}
+    cfg = {
+        k: s[k]
+        for k in ("name", "logo", "loading_text", "welcome_text", "sidebar_title", "tab_title", "footer_link", "footer_link_value")
+    }
     return _JS.replace("__CFG__", json.dumps(cfg, ensure_ascii=False))
 
 

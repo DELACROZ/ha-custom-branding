@@ -7,6 +7,9 @@ const TEXT = {
     shortName: "Short name", shortHelp: "Name under the app icon on the phone (about 12 letters).",
     loadingText: "Loading text", loadingHelp: "Text under the spinner. Leave empty to hide it.",
     welcomeText: "Login screen text", welcomeHelp: "Replaces \"Welcome Home!\" on the login page. Leave empty to keep the default.",
+    footerLink: "Help link (bottom of login page)", footerHelp: "Replace it with a WhatsApp or Instagram button, or remove it.",
+    footerDefault: "Default (link to Home Assistant docs)", footerHide: "Remove it", footerWhatsapp: "WhatsApp button", footerInstagram: "Instagram button",
+    footerWhatsappValue: "WhatsApp number (with country code, e.g. 5564999999999)", footerInstagramValue: "Instagram username (e.g. iot_now_automacoes)",
     images: "Images", logo: "Logo", logoHelp: "Shown on the loading screen and the login page. PNG, JPEG, WebP or SVG.",
     blackBg: "My logo has a black background (make it transparent)",
     autoIcon: "Create the app icon from the logo", icon: "App icon (square)", maskable: "Maskable icon (Android)",
@@ -26,6 +29,9 @@ const TEXT = {
     shortName: "Nome curto", shortHelp: "Nome embaixo do ícone no celular (uns 12 caracteres).",
     loadingText: "Texto de carregamento", loadingHelp: "Texto embaixo da bolinha. Deixe vazio para esconder.",
     welcomeText: "Texto da tela de login", welcomeHelp: "Substitui \"Bem-vindo ao lar!\" na tela de login. Deixe vazio para manter o padrão.",
+    footerLink: "Link de ajuda (rodapé da tela de login)", footerHelp: "Troca por um botão do WhatsApp ou Instagram, ou remove.",
+    footerDefault: "Padrão (link para a documentação do Home Assistant)", footerHide: "Remover", footerWhatsapp: "Botão do WhatsApp", footerInstagram: "Botão do Instagram",
+    footerWhatsappValue: "Número do WhatsApp (com DDI, ex: 5564999999999)", footerInstagramValue: "Usuário do Instagram (ex: iot_now_automacoes)",
     images: "Imagens", logo: "Logo", logoHelp: "Aparece na tela de carregamento e na de login. PNG, JPEG, WebP ou SVG.",
     blackBg: "Minha logo tem fundo preto (tornar transparente)",
     autoIcon: "Criar o ícone do app a partir da logo", icon: "Ícone do app (quadrado)", maskable: "Ícone maskable (Android)",
@@ -157,7 +163,7 @@ class CustomBrandingPanel extends HTMLElement {
         .row { display:grid; grid-template-columns:minmax(140px,1fr) 2fr; gap:12px; align-items:center; padding:8px 0; border-top:1px solid var(--divider-color); }
         .row:first-of-type { border-top:0; }
         .lab small { display:block; color:var(--secondary-text-color); font-size:12px; margin-top:2px; }
-        input[type=text] { width:100%; box-sizing:border-box; padding:10px 12px; border-radius:8px; border:1px solid var(--divider-color); background:var(--primary-background-color); color:var(--primary-text-color); font:inherit; }
+        input[type=text], select { width:100%; box-sizing:border-box; padding:10px 12px; border-radius:8px; border:1px solid var(--divider-color); background:var(--primary-background-color); color:var(--primary-text-color); font:inherit; }
         input[type=color] { width:56px; height:36px; padding:0; border:1px solid var(--divider-color); border-radius:8px; background:none; }
         .colors { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
         .colors label { display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--secondary-text-color); }
@@ -187,6 +193,17 @@ class CustomBrandingPanel extends HTMLElement {
           <div class="row"><div class="lab"><b>${t.shortName}</b><small>${t.shortHelp}</small></div><input type="text" data-k="short_name" value="${this._esc(s.short_name)}"></div>
           <div class="row"><div class="lab"><b>${t.loadingText}</b><small>${t.loadingHelp}</small></div><input type="text" data-k="loading_text" value="${this._esc(s.loading_text !== undefined ? s.loading_text : (this._defaults.loading_text || ""))}"></div>
           <div class="row"><div class="lab"><b>${t.welcomeText}</b><small>${t.welcomeHelp}</small></div><input type="text" data-k="welcome_text" value="${this._esc(s.welcome_text)}"></div>
+          <div class="row"><div class="lab"><b>${t.footerLink}</b><small>${t.footerHelp}</small></div>
+            <select data-k="footer_link">
+              <option value="" ${!s.footer_link ? "selected" : ""}>${t.footerDefault}</option>
+              <option value="hide" ${s.footer_link === "hide" ? "selected" : ""}>${t.footerHide}</option>
+              <option value="whatsapp" ${s.footer_link === "whatsapp" ? "selected" : ""}>${t.footerWhatsapp}</option>
+              <option value="instagram" ${s.footer_link === "instagram" ? "selected" : ""}>${t.footerInstagram}</option>
+            </select>
+          </div>
+          ${s.footer_link === "whatsapp" || s.footer_link === "instagram" ? `
+          <div class="row"><div class="lab"><b>${s.footer_link === "whatsapp" ? t.footerWhatsappValue : t.footerInstagramValue}</b></div>
+            <input type="text" data-k="footer_link_value" value="${this._esc(s.footer_link_value)}"></div>` : ""}
         </section>
         <section class="card"><h2>${t.images}</h2>
           ${imgRow("logo", t.logo, t.logoHelp)}
@@ -221,7 +238,13 @@ class CustomBrandingPanel extends HTMLElement {
   _bool(k) { return this._s[k] !== undefined ? !!this._s[k] : this._defaults[k] !== false; }
 
   _wire() {
-    this.querySelectorAll("[data-k]").forEach((el) => el.addEventListener("input", () => { this._s[el.dataset.k] = el.value; this._preview(); }));
+    this.querySelectorAll("[data-k]").forEach((el) => {
+      const isSelect = el.tagName === "SELECT";
+      el.addEventListener(isSelect ? "change" : "input", () => {
+        this._s[el.dataset.k] = el.value;
+        if (isSelect) this._render(); else this._preview();
+      });
+    });
     this.querySelectorAll("[data-b]").forEach((el) => el.addEventListener("change", () => { this._s[el.dataset.b] = el.checked; }));
     this.querySelectorAll("[data-up]").forEach((el) => el.addEventListener("change", () => el.files[0] && this._upload(el.dataset.up, el.files[0])));
     this.querySelector("#save").addEventListener("click", () => this._save());

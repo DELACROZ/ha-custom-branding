@@ -52,7 +52,7 @@ Copy `custom_components/custom_branding` into your `/config/custom_components/` 
 
 Open **Branding** in the sidebar:
 
-* **Identity:** name (tab title, sidebar and app name), short name (under the app icon on the phone), the loading text and the login screen text (replaces "Welcome Home!").
+* **Identity:** name (tab title, sidebar and app name), short name (under the app icon on the phone), the loading text, the login screen text (replaces "Welcome Home!") and the help link at the bottom of the login page (replace it with a WhatsApp or Instagram button, or remove it).
 * **Images:** choose your **logo**. Tick *"My logo has a black background"* if it is a JPEG on black (it becomes transparent). Leave *"Create the app icon from the logo"* ticked and the square app icons are made for you; or upload your own. PNG, JPEG, WebP or SVG are accepted (max 6 MB).
 * **Colors:** background, accent (spinner, buttons) and text. The preview shows the loading screen live.
 * **Options:** hide the Home Assistant logo / the "Open Home Foundation" footer, replace the sidebar title and the tab title.
@@ -77,6 +77,8 @@ custom_branding:
   text_color: "#eef7ff"
   loading_text: "Loading"
   welcome_text: "Welcome!"
+  footer_link: "whatsapp"  # or "instagram" or "hide"
+  footer_link_value: "5564999999999"
   hide_ha_logo: true
   hide_open_home_foundation: true
   sidebar_title: true
