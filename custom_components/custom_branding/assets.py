@@ -26,6 +26,7 @@ DEFAULTS = {
     "accent_color": "#00d9ff",
     "text_color": "#eef7ff",
     "loading_text": "Loading",
+    "welcome_text": None,
     "hide_ha_logo": True,
     "hide_open_home_foundation": True,
     "sidebar_title": True,
@@ -78,7 +79,7 @@ def normalize(cfg: dict | None) -> dict:
             s[key] = None
         elif v is not None:
             s[key] = v.strip()
-    for key in ("name", "short_name", "loading_text"):
+    for key in ("name", "short_name", "loading_text", "welcome_text"):
         if s[key] is not None:
             s[key] = str(s[key]).strip()[:60] or None
     if s["name"] and not s["short_name"]:
@@ -152,12 +153,27 @@ _JS = """/* Custom Branding: loading screen content, sidebar title and tab title
     if (node) new MutationObserver(title).observe(node, { childList: true, characterData: true, subtree: true });
     else setInterval(title, 1500);
   }
+  if (C.welcome_text) {
+    var KNOWN_WELCOME = ["Welcome Home!", "Bem-vindo ao lar!"];
+    var fixWelcome = function (node) {
+      if (node.nodeType === 3) {
+        if (KNOWN_WELCOME.indexOf(node.nodeValue.trim()) !== -1) node.nodeValue = C.welcome_text;
+        return;
+      }
+      var kids = node.childNodes || [];
+      for (var i = 0; i < kids.length; i++) fixWelcome(kids[i]);
+      if (node.shadowRoot) fixWelcome(node.shadowRoot);
+    };
+    var run = function () { try { fixWelcome(document.body); } catch (e) {} };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
+    setInterval(run, 500);
+  }
 })();
 """
 
 
 def build_js(s: dict) -> str:
-    cfg = {k: s[k] for k in ("name", "logo", "loading_text", "sidebar_title", "tab_title")}
+    cfg = {k: s[k] for k in ("name", "logo", "loading_text", "welcome_text", "sidebar_title", "tab_title")}
     return _JS.replace("__CFG__", json.dumps(cfg, ensure_ascii=False))
 
 
