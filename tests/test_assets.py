@@ -85,6 +85,16 @@ def test_css_js_manifest():
     assert "icons" not in assets.build_manifest(assets.normalize({}))
 
 
+def test_welcome_text():
+    s = assets.normalize({"welcome_text": " Seja bem-vindo! "})
+    assert s["welcome_text"] == "Seja bem-vindo!"
+    js = assets.build_js(s)
+    cfg = json.loads(js.split("var C = ")[1].split(";\n")[0])
+    assert cfg["welcome_text"] == "Seja bem-vindo!"
+    assert "Bem-vindo ao lar!" in js and "Welcome Home!" in js
+    assert assets.build_js(assets.normalize({}))  # no welcome_text set: still builds fine
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

@@ -6,6 +6,7 @@ const TEXT = {
     identity: "Identity", name: "Name", nameHelp: "Shown in the tab title, sidebar and as the app name.",
     shortName: "Short name", shortHelp: "Name under the app icon on the phone (about 12 letters).",
     loadingText: "Loading text", loadingHelp: "Text under the spinner. Leave empty to hide it.",
+    welcomeText: "Login screen text", welcomeHelp: "Replaces \"Welcome Home!\" on the login page. Leave empty to keep the default.",
     images: "Images", logo: "Logo", logoHelp: "Shown on the loading screen and the login page. PNG, JPEG, WebP or SVG.",
     blackBg: "My logo has a black background (make it transparent)",
     autoIcon: "Create the app icon from the logo", icon: "App icon (square)", maskable: "Maskable icon (Android)",
@@ -24,6 +25,7 @@ const TEXT = {
     identity: "Identidade", name: "Nome", nameHelp: "Aparece no título da aba, na barra lateral e como nome do app.",
     shortName: "Nome curto", shortHelp: "Nome embaixo do ícone no celular (uns 12 caracteres).",
     loadingText: "Texto de carregamento", loadingHelp: "Texto embaixo da bolinha. Deixe vazio para esconder.",
+    welcomeText: "Texto da tela de login", welcomeHelp: "Substitui \"Bem-vindo ao lar!\" na tela de login. Deixe vazio para manter o padrão.",
     images: "Imagens", logo: "Logo", logoHelp: "Aparece na tela de carregamento e na de login. PNG, JPEG, WebP ou SVG.",
     blackBg: "Minha logo tem fundo preto (tornar transparente)",
     autoIcon: "Criar o ícone do app a partir da logo", icon: "Ícone do app (quadrado)", maskable: "Ícone maskable (Android)",
@@ -184,6 +186,7 @@ class CustomBrandingPanel extends HTMLElement {
           <div class="row"><div class="lab"><b>${t.name}</b><small>${t.nameHelp}</small></div><input type="text" data-k="name" value="${this._esc(s.name)}"></div>
           <div class="row"><div class="lab"><b>${t.shortName}</b><small>${t.shortHelp}</small></div><input type="text" data-k="short_name" value="${this._esc(s.short_name)}"></div>
           <div class="row"><div class="lab"><b>${t.loadingText}</b><small>${t.loadingHelp}</small></div><input type="text" data-k="loading_text" value="${this._esc(s.loading_text !== undefined ? s.loading_text : (this._defaults.loading_text || ""))}"></div>
+          <div class="row"><div class="lab"><b>${t.welcomeText}</b><small>${t.welcomeHelp}</small></div><input type="text" data-k="welcome_text" value="${this._esc(s.welcome_text)}"></div>
         </section>
         <section class="card"><h2>${t.images}</h2>
           ${imgRow("logo", t.logo, t.logoHelp)}
